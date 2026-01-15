@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Schedule Display</title>
+  <style>
+    .counter {
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+    }
+    .number {
+      font-size: 36px;
+    }
+    .caption {
+      font-size: 18px;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+<div class="section upcoming-Reading js-countdown py-5">
+  <div class="container">
+    <div class="row justify-content-between counter-wrap" id="clockdiv">
+      <div class="col-lg-3 mb-4 mb-lg-0">
+        <img src="images/sq-2.jpg" alt="Image" class="img-fluid rounded">
+      </div>
+      <div class="col-lg-8">
+        <span class="subheading d-block mb-4">Upcoming Mass</span>
+        <h2 class="text-black">Next Mass For Today, <span id="date"></span></h2>
+        <p class="Reading-meta mb-4"><b><span id="liveTime"></span></b></p>
+        <p><strong></strong> <span id="netMass">Loading...</span></p>
+
+        <div class="row mt-4">
+          <div class="col-6 col-sm-6 col-md-6 col-lg-3 text-left">
+        <div class="counter">
+  <span class="number d-block" id="timeDisplay">— —</span>
+  <span class="caption">Parish Center</span>
+</div>
+</div>
+          <div class="col-6 col-sm-6 col-md-6 col-lg-3 text-left">
+<div class="counter">
+              <span class="number d-block">— —</span>
+              <span class="caption">Youths Hall</span>
+            </div>
+          </div>
+          <div class="col-6 col-sm-6 col-md-6 col-lg-3 text-left">
+            <div class="counter">
+              <span class="number d-block">— —</span>
+              <span class="caption">Phase 1</span>
+            </div>
+          </div>
+          <div class="col-6 col-sm-6 col-md-6 col-lg-3 text-left">
+            <div class="counter">
+              <span class="number d-block">— —</span>
+              <span class="caption">Phase 2</span>
+            </div>
+          </div>
+        </div>
+   
+
+					<div class="row mt-5">
+						<div class="col-12">
+							<a href="#schedules" class="btn btn-secondary">All Mass Schedules</a>
+						</div>
+					</div>
+					
+
+				</div>
+				
+
+			</div>
+
+		</div>
+	</div>
+
+ 
+	
+	<script>
+	function getNextScheduleTime() {
+  const now = new Date();
+  const dayOfWeek = now.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+  const currentTime = now.getHours() * 60 + now.getMinutes();
+
+  const parishCenterSchedules = [];
+  const youthsHallSchedules = [];
+  const phase1Schedules = [];
+  const phase2Schedules = [];
+
+  if (dayOfWeek === 0) { // Sunday
+    parishCenterSchedules.push(
+      { time: 6 * 60, display: "6:00am" },
+      { time: 8 * 60 + 30, display: "8:30am" },
+      { time: 10 * 60, display: "10:00am" },
+      { time: 18 * 60, display: "6:00pm" }
+    );
+    youthsHallSchedules.push(
+      { time: 6 * 60 + 15, display: "6:15am" },
+      { time: 8 * 60, display: "8:00am" }
+    );
+    phase1Schedules.push(
+      { time: 5 * 60 + 30, display: "5:30am" },
+      { time: 7 * 60 + 30, display: "7:30am" }
+    );
+    phase2Schedules.push(
+      { time: 5 * 60 + 30, display: "5:30am" },
+      { time: 9 * 60, display: "9:00am" }
+    );
+  } else if (dayOfWeek >= 1 && dayOfWeek <= 5) { // Monday to Friday
+    parishCenterSchedules.push(
+      { time: 5 * 60 + 30, display: "5:30am" },
+      { time: 18 * 60, display: "6:00pm" }
+    );
+    phase1Schedules.push(
+      { time: 6 * 60, display: "6:00am" }
+    );
+    phase2Schedules.push(
+      { time: 6 * 60, display: "6:00am" }
+    );
+  } else if (dayOfWeek === 6) { // Saturday
+    parishCenterSchedules.push(
+      { time: 5 * 60 + 30, display: "5:30am" }
+    );
+    phase1Schedules.push(
+      { time: 6 * 60, display: "6:00am" }
+    );
+    phase2Schedules.push(
+      { time: 6 * 60, display: "6:00am" }
+    );
+  }
+
+  const getNextSchedule = (schedules) => {
+  let nextSchedule = null;
+  for (let i = 0; i < schedules.length; i++) {
+    if (schedules[i].time > currentTime) {
+      nextSchedule = schedules[i];
+      break;
+    }
+  }
+  if (!nextSchedule) {
+    const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+    const tomorrowDayOfWeek = tomorrow.getDay();
+
+    if (tomorrowDayOfWeek === 0) { // Sunday
+      if (schedules === parishCenterSchedules) {
+        schedules = [
+          { time: 6 * 60, display: "6:00am" },
+          { time: 8 * 60 + 30, display: "8:30am" },
+          { time: 10 * 60, display: "10:00am" },
+          { time: 18 * 60, display: "6:00pm" },
+        ];
+      } else if (schedules === youthsHallSchedules) {
+        schedules = [
+          { time: 6 * 60 + 15, display: "6:15am" },
+          { time: 8 * 60, display: "8:00am" },
+        ];
+      } else if (schedules === phase1Schedules) {
+        schedules = [
+          { time: 5 * 60 + 30, display: "5:30am" },
+          { time: 7 * 60 + 30, display: "7:30am" },
+        ];
+      } else if (schedules === phase2Schedules) {
+        schedules = [
+          { time: 5 * 60 + 30, display: "5:30am" },
+          { time: 9 * 60, display: "9:00am" },
+        ];
+      }
+    } else if (tomorrowDayOfWeek >= 1 && tomorrowDayOfWeek <= 5) { // Monday to Friday
+      if (schedules === parishCenterSchedules) {
+        schedules = [
+          { time: 5 * 60 + 30, display: "5:30am" },
+          { time: 18 * 60, display: "6:00pm" },
+        ];
+      } else if (schedules === phase1Schedules) {
+        schedules = [
+          { time: 6 * 60, display: "6:00am" },
+        ];
+      } else if (schedules === phase2Schedules) {
+        schedules = [
+          { time: 6 * 60, display: "6:00am" },
+        ];
+      }
+    } else if (tomorrowDayOfWeek === 6) { // Saturday
+      if (schedules === parishCenterSchedules) {
+        schedules = [
+          { time: 5 * 60 + 30, display: "5:30am" },
+        ];
+      } else if (schedules === phase1Schedules) {
+        schedules = [
+          { time: 6 * 60, display: "6:00am" },
+        ];
+      } else if (schedules === phase2Schedules) {
+        schedules = [
+          { time: 6 * 60, display: "6:00am" },
+        ];
+      }
+    }
+    nextSchedule = schedules[0];
+  }
+
+  if (nextSchedule) {
+    const timeDiff = nextSchedule.time - currentTime;
+    if (timeDiff <= 100) {
+      return nextSchedule.display;
+    } else {
+      return "— —";
+    }
+  } else {
+    return "— —";
+  }
+};
+
+const parishCenterDisplay = document.querySelectorAll(".counter")[0].querySelector(".number");
+const youthsHallDisplay = document.querySelectorAll(".counter")[1].querySelector(".number");
+const phase1Display = document.querySelectorAll(".counter")[2].querySelector(".number");
+const phase2Display = document.querySelectorAll(".counter")[3].querySelector(".number");
+
+setInterval(() => {
+  const now = new Date();
+  const currentTime = now.getHours() * 60 + now.getMinutes();
+
+  parishCenterDisplay.textContent = getNextSchedule(parishCenterSchedules);
+  if (youthsHallDisplay) {
+    youthsHallDisplay.textContent = getNextSchedule(youthsHallSchedules);
+  }
+  phase1Display.textContent = getNextSchedule(phase1Schedules);
+  phase2Display.textContent = getNextSchedule(phase2Schedules);
+}, 60 * 1000);
+
+getNextScheduleTime();</script>
+</body>
+</html>
